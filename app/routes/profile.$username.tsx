@@ -179,6 +179,14 @@ export default function ProfilePage() {
 								{t('measurements')}
 							</span>
 						</div>
+						<div className="dark:bg-dark-boxes flex flex-col items-center rounded-lg bg-gray-100 p-4">
+							<span className="dark:text-dark-green text-2xl font-bold">
+								{sensorsCount}{/*need subscribedSensorCount function*/}
+							</span>
+							<span className="text-sm text-gray-500 dark:text-gray-400">
+								{t('subscribed sensors')}
+							</span>
+						</div>
 					</div>
 				</div>
 
