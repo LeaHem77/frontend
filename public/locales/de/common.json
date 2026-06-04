@@ -10,5 +10,17 @@
 	"error_help_text": "Wenn dieses Problem weiterhin besteht, wenden Sie sich bitte an unser Support-Team.",
 	"go_back": "Zurück",
 	"go_home": "Zur Startseite",
-	"try_again": "Erneut versuchen"
+	"try_again": "Erneut versuchen",
+	"sensorAlert": {
+		"buttonTitle": "Sensor abonnieren und Benachrichtigungen aktivieren",
+		"title": "Sensor abonnieren und Benachrichtigungen aktivieren",
+		"description": "Benachrichtige mich wenn der Wert:",
+		"greaterThan": "größer als (>)",
+		"lessThan": "kleiner als (<)",
+		"equalTo": "gleich (=)",
+		"threshold": "Schwellwert",
+		"cancel": "Abbrechen",
+		"save": "Speichern",
+		"email_subscription": "E-Mail für Benachrichtigungen"
+	}
 }

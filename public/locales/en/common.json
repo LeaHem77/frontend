@@ -10,5 +10,17 @@
 	"error_help_text": "If this problem persists, please contact our support team.",
 	"go_back": "Go back",
 	"go_home": "Go home",
-	"try_again": "Try again"
+	"try_again": "Try again",
+	"sensorAlert": {
+		"buttonTitle": "Subscribe to this sensor and get notified",
+		"title": "Subscribe to this sensor and get notified",
+		"description": "Notify me when the value is:",
+		"greaterThan": "greater than (>)",
+		"lessThan": "less than (<)",
+		"equalTo": "equal to (=)",
+		"threshold": "Threshold",
+		"cancel": "Cancel",
+		"save": "Save",
+		"email_subscription": "Email for notifications"
+	}
 }
