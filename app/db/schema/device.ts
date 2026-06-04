@@ -21,6 +21,7 @@ import { location } from './location'
 import { logEntry } from './log-entry'
 import { sensor } from './sensor'
 import { user } from './user'
+import { sensorAlert } from './sensor-alert' 
 
 /**
  * Table
@@ -93,6 +94,7 @@ export const deviceRelations = relations(device, ({ one, many }) => ({
 	sensors: many(sensor),
 	locations: many(deviceToLocation),
 	logEntries: many(logEntry),
+	sensorAlerts: many(sensorAlert),
 }))
 
 // Many-to-many

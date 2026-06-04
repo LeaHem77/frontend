@@ -11,6 +11,7 @@ import { device } from './device'
 import { password } from './password'
 import { profile } from './profile'
 import { refreshToken } from './refreshToken'
+import { sensorAlert } from './sensor-alert'
 import { tosVersion } from './tos'
 
 /**
@@ -50,6 +51,7 @@ export const userRelations = relations(user, ({ one, many }) => ({
 	devices: many(device),
 	refreshToken: many(refreshToken),
 	actionTokens: many(actionToken),
+	sensorAlerts: many(sensorAlert),
 }))
 
 /**
