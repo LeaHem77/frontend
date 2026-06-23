@@ -37,10 +37,27 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const max = defaults?.max ?? 100
   const step = (max - min) > 50 ? 1 : 0.1
 
-  const handleSave = () => {
-    console.log({ sensorId: sensor.id, operator, threshold, email })
+ const handleSave = async () => {
+  console.log({ sensorId: sensor.id, deviceId: sensor.deviceId, operator, threshold, email })
+  try {
+    const response = await fetch("/api/sensor-alerts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sensorId: sensor.id,
+        deviceId: sensor.deviceId,
+        operator,
+        threshold,
+        email,
+      }),
+    })
+
+    if (!response.ok) throw new Error("Failed to create alert")
     setOpen(false)
+  } catch (err) {
+    console.error(err)
   }
+}
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

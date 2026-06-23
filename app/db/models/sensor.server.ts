@@ -94,6 +94,7 @@ export async function getSensorsWithLastMeasurement(
         s.title,
         s.unit,
         s.sensor_type,
+		s.device_id AS "deviceId",
         json_agg(
           json_build_object(
             'value', measure.value,
