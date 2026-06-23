@@ -27,6 +27,7 @@ export const sensorAlert = pgTable('sensor_alert', {
     email:       text('email').notNull(),
     createdAt:   timestamp('created_at').defaultNow().notNull(),
     updatedAt:   timestamp('updated_at').defaultNow().notNull(),
+    lastNotifiedAt: timestamp('last_notified_at'),
     userId:      text('user_id')
         .notNull()
         .references(() => user.id, {

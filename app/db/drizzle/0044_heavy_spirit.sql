@@ -1,0 +1,1 @@
+ALTER TABLE "sensor_alert" ADD COLUMN "last_notified_at" timestamp;

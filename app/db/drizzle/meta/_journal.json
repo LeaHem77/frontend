@@ -309,6 +309,13 @@
       "when": 1780577444526,
       "tag": "0043_little_prima",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1782216258408,
+      "tag": "0044_heavy_spirit",
+      "breakpoints": true
     }
   ]
 }
