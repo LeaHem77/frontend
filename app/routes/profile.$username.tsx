@@ -16,6 +16,7 @@ import { getUserId } from "~/services/session-service.server";
 import { claimBox } from "~/services/transfer-service.server";
 import { userNameFromURl } from "~/services/user-service.server";
 import { getSensorAlertsCountForUser } from "~/services/sensor-alert.server";
+import { getSensorAlertsForUser } from "~/services/sensor-alert.server";
 
 type ActionData = {
   success: boolean;
@@ -35,6 +36,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       sensorsCount: "0",
       measurementsCount: "0",
       subscribedSensorsCount: 0,
+      sensorAlerts: [],
     };
   }
 
@@ -51,6 +53,9 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const subscribedSensorsCount = requestingUserId
     ? await getSensorAlertsCountForUser(requestingUserId)
     : 0;
+    const sensorAlerts = requestingUserId && requestingUserId === profile.userId
+    ? await getSensorAlertsForUser(requestingUserId)
+    : []
 
   return {
     profile,
@@ -58,6 +63,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     sensorsCount: counts.sensorsCount,
     measurementsCount: counts.measurementsCount,
     subscribedSensorsCount,
+    sensorAlerts,
   };
 }
 
@@ -125,6 +131,7 @@ export default function ProfilePage() {
     measurementsCount,
     requestingUserId,
     subscribedSensorsCount,
+    sensorAlerts,
   } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation("profile");
@@ -219,6 +226,35 @@ export default function ProfilePage() {
               />
             )}
           </div>
+          {isOwner && sensorAlerts.length > 0 && (
+            <div className="dark:bg-dark-background rounded-xl bg-white p-6 shadow-lg">
+              <div className="text-light-green dark:text-dark-green mb-4 text-3xl font-semibold">
+                Sensor Alerts
+              </div>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="p-2 text-left">Device</th>
+                    <th className="p-2 text-left">Sensor</th>
+                    <th className="p-2 text-left">Operator</th>
+                    <th className="p-2 text-left">Threshold</th>
+                    <th className="p-2 text-left">E-Mail</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sensorAlerts.map((alert) => (
+                    <tr key={alert.id} className="border-b">
+                      <td className="p-2">{alert.device?.name ?? alert.deviceId}</td>
+                      <td className="p-2">{alert.sensor?.title ?? alert.sensorId}</td>
+                      <td className="p-2">{alert.operator}</td>
+                      <td className="p-2">{alert.threshold}</td>
+                      <td className="p-2">{alert.email}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
