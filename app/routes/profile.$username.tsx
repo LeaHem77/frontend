@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { redirect, useLoaderData } from "react-router";
+import { redirect, useLoaderData, Form } from "react-router";
+import { Trash2 } from "lucide-react"
 import { type Route } from "./+types/profile.$username";
 import { getColumns } from "~/components/mydevices/dt/columns";
 import { DataTable } from "~/components/mydevices/dt/data-table";
@@ -17,6 +18,7 @@ import { claimBox } from "~/services/transfer-service.server";
 import { userNameFromURl } from "~/services/user-service.server";
 import { getSensorAlertsCountForUser } from "~/services/sensor-alert.server";
 import { getSensorAlertsForUser } from "~/services/sensor-alert.server";
+import { deleteSensorAlert } from "~/services/sensor-alert.server"
 
 type ActionData = {
   success: boolean;
@@ -90,6 +92,11 @@ export async function action({ request, params }: Route.ActionArgs) {
   const formData = await request.formData();
   const intent = formData.get("intent")?.toString();
   const token = formData.get("token")?.toString().trim();
+  const alertId = formData.get("alertId")?.toString();
+  if (alertId) {
+    await deleteSensorAlert(alertId, userId)
+    return null
+  }
 
   if (intent !== "claim-device") {
     return {
@@ -239,6 +246,7 @@ export default function ProfilePage() {
                     <th className="p-2 text-left">Operator</th>
                     <th className="p-2 text-left">Threshold</th>
                     <th className="p-2 text-left">E-Mail</th>
+                    <th className="p-2 text-left"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,7 +257,15 @@ export default function ProfilePage() {
                       <td className="p-2">{alert.operator}</td>
                       <td className="p-2">{alert.threshold}</td>
                       <td className="p-2">{alert.email}</td>
-                    </tr>
+                      <td className="p-2">
+                        <Form method="post" action={`/profile/${profile?.user?.name}`}>
+                          <input type="hidden" name="alertId" value={alert.id} />
+                          <button type="submit" className="cursor-pointer hover:text-red-500 transition-colors">
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </Form>
+                      </td>
+                  </tr>
                   ))}
                 </tbody>
               </table>
