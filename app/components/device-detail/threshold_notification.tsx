@@ -10,6 +10,7 @@ import {
 } from "../ui/dialog"
 import { Button } from "../ui/button"
 import { Slider } from "~/components/ui/slider"
+import { useToast } from "~/components/ui/use-toast"
 import { getSensorAlertDefaults } from "~/lib/sensor-alert-defaults"
 import { type SensorWithLatestMeasurement } from "~/db/schema"
 
@@ -25,6 +26,7 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const [operator, setOperator] = useState<string>(defaults?.defaultOperator ?? "gt")
   const [threshold, setThreshold] = useState<number>(defaults?.defaultThreshold ?? 0)
   const [email, setEmail] = useState<string>("")
+  const { toast } = useToast()
 
   useEffect(() => {
     if (open) {
@@ -54,6 +56,19 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
 
     if (!response.ok) throw new Error("Failed to create alert")
     setOpen(false)
+    toast({
+      title: "yeah",
+      description: (
+        <span>
+          text{" "}
+          <a href="/profile/me" className="underline font-semibold">
+            Profil
+          </a>{" "}
+          text.
+        </span>
+      ),
+    })
+
   } catch (err) {
     console.error(err)
   }
