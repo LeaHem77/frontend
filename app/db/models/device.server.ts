@@ -1028,3 +1028,29 @@ export async function addOrReplaceDeviceApiKey(
 
 	return { apiKey: result[0].apiKey }
 }
+
+export async function getDevicesInPolygon(
+  polygonGeoJSON: GeoJSON.Feature<GeoJSON.Polygon>,
+  limit: number = 50,
+) {
+  const coordinates = polygonGeoJSON.geometry.coordinates[0]
+  const polygonWKT = `POLYGON((${coordinates.map((c) => `${c[0]} ${c[1]}`).join(', ')}))`
+
+  const devices = await drizzleClient
+    .select({
+      id: device.id,
+      name: device.name,
+      latitude: device.latitude,
+      longitude: device.longitude,
+    })
+    .from(device)
+    .where(
+      sql`ST_Contains(
+        ST_GeomFromText(${polygonWKT}, 4326),
+        ST_SetSRID(ST_MakePoint(${device.longitude}, ${device.latitude}), 4326)
+      )`
+    )
+    .limit(limit)
+
+  return devices
+}
