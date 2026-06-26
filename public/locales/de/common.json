@@ -21,6 +21,7 @@
 		"threshold": "Schwellwert",
 		"cancel": "Abbrechen",
 		"save": "Speichern",
-		"email_subscription": "E-Mail für Benachrichtigungen"
+		"email_subscription": "E-Mail für Benachrichtigungen",
+		"email_invalid": "Bitte gültige E-Mail-Adresse eingeben"
 	}
 }
