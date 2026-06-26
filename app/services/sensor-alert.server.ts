@@ -33,10 +33,28 @@ export async function deleteSensorAlert(alertId: string, userId: string) {
         )
 }
 
-export async function getSensorAlertsCountForUser(userId: string) {
-    const alerts = await drizzleClient
-        .select({ id: sensorAlert.id })
-        .from(sensorAlert)
+export async function getTriggeredAlertsForUser(userId: string) {
+    return drizzleClient.query.sensorAlert.findMany({
+        where: (sa, { eq, and, isNotNull }) =>
+            and(
+                eq(sa.userId, userId),
+                isNotNull(sa.lastNotifiedAt),
+            ),
+        with: {
+            device: true,
+            sensor: true,
+        },
+    })
+}
+
+export async function hasUnseenTriggeredAlerts(userId: string): Promise<boolean> {
+    const alerts = await getTriggeredAlertsForUser(userId)
+    return alerts.length > 0
+}
+
+export async function markAlertsAsSeen(userId: string) {
+    return drizzleClient
+        .update(sensorAlert)
+        .set({ seenAt: new Date() })
         .where(eq(sensorAlert.userId, userId))
-    return alerts.length
 }

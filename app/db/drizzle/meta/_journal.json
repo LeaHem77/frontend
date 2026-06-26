@@ -316,6 +316,13 @@
       "when": 1782216258408,
       "tag": "0044_heavy_spirit",
       "breakpoints": true
+    },
+    {
+      "idx": 45,
+      "version": "7",
+      "when": 1782476734573,
+      "tag": "0045_living_sway",
+      "breakpoints": true
     }
   ]
 }

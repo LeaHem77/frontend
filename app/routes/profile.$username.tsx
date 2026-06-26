@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { redirect, useLoaderData, Form } from "react-router";
-import { Trash2 } from "lucide-react"
+import { Trash2 } from "lucide-react";
 import { type Route } from "./+types/profile.$username";
 import { getColumns } from "~/components/mydevices/dt/columns";
 import { DataTable } from "~/components/mydevices/dt/data-table";
@@ -16,9 +16,10 @@ import { getInitials } from "~/lib/strings";
 import { getUserId } from "~/services/session-service.server";
 import { claimBox } from "~/services/transfer-service.server";
 import { userNameFromURl } from "~/services/user-service.server";
-import { getSensorAlertsCountForUser } from "~/services/sensor-alert.server";
+// import {  } from "~/services/sensor-alert.server";
 import { getSensorAlertsForUser } from "~/services/sensor-alert.server";
-import { deleteSensorAlert } from "~/services/sensor-alert.server"
+import { deleteSensorAlert } from "~/services/sensor-alert.server";
+import { getTriggeredAlertsForUser } from "~/services/sensor-alert.server";
 
 type ActionData = {
   success: boolean;
@@ -39,6 +40,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
       measurementsCount: "0",
       subscribedSensorsCount: 0,
       sensorAlerts: [],
+      triggeredAlerts: [],
     };
   }
 
@@ -53,11 +55,18 @@ export async function loader({ params, request }: Route.LoaderArgs) {
   const counts = await getProfileSensorsAndMeasurementsCount(profile);
 
   const subscribedSensorsCount = requestingUserId
-    ? await getSensorAlertsCountForUser(requestingUserId)
+    ? (await getSensorAlertsForUser(requestingUserId)).length
     : 0;
-    const sensorAlerts = requestingUserId && requestingUserId === profile.userId
+
+  const isOwnerView = requestingUserId && requestingUserId === profile.userId;
+
+  const sensorAlerts = isOwnerView
     ? await getSensorAlertsForUser(requestingUserId)
-    : []
+    : [];
+
+  const triggeredAlerts = isOwnerView
+    ? await getTriggeredAlertsForUser(requestingUserId)
+    : [];
 
   return {
     profile,
@@ -66,6 +75,7 @@ export async function loader({ params, request }: Route.LoaderArgs) {
     measurementsCount: counts.measurementsCount,
     subscribedSensorsCount,
     sensorAlerts,
+    triggeredAlerts,
   };
 }
 
@@ -94,8 +104,8 @@ export async function action({ request, params }: Route.ActionArgs) {
   const token = formData.get("token")?.toString().trim();
   const alertId = formData.get("alertId")?.toString();
   if (alertId) {
-    await deleteSensorAlert(alertId, userId)
-    return null
+    await deleteSensorAlert(alertId, userId);
+    return null;
   }
 
   if (intent !== "claim-device") {
@@ -139,9 +149,12 @@ export default function ProfilePage() {
     requestingUserId,
     subscribedSensorsCount,
     sensorAlerts,
+    triggeredAlerts,
   } = useLoaderData<typeof loader>();
 
   const { t } = useTranslation("profile");
+  const { t: tCommon } = useTranslation("common");
+
   const columnsTranslation = useTranslation("data-table");
 
   const isOwner = !!profile?.userId && requestingUserId === profile.userId;
@@ -213,6 +226,29 @@ export default function ProfilePage() {
               </span>
             </div>
           </div>
+
+          {isOwner && triggeredAlerts.length > 0 && (
+            <div className="rounded-lg border border-red-300 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950/30">
+              <div className="mb-2 flex items-center gap-2 text-red-600 dark:text-red-400">
+                <span className="h-2 w-2 rounded-full bg-red-500" />
+                <span className="text-sm font-semibold">
+                  {tCommon("sensorAlert.triggeredAlerts")}
+                </span>
+              </div>
+              <ul className="space-y-1 text-sm">
+                {triggeredAlerts.map((alert) => (
+                  <li
+                    key={alert.id}
+                    className="text-gray-700 dark:text-gray-300"
+                  >
+                    <span className="font-medium">{alert.device?.name}</span>
+                    {" – "}
+                    {alert.sensor?.title} ({alert.operator} {alert.threshold})
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="flex w-full flex-col gap-6 md:w-2/3">
@@ -236,7 +272,7 @@ export default function ProfilePage() {
           {isOwner && sensorAlerts.length > 0 && (
             <div className="dark:bg-dark-background rounded-xl bg-white p-6 shadow-lg">
               <div className="text-light-green dark:text-dark-green mb-4 text-3xl font-semibold">
-                Sensor Alerts
+                {tCommon("sensorAlert.triggeredAlerts")}
               </div>
               <table className="w-full text-sm">
                 <thead>
@@ -252,20 +288,34 @@ export default function ProfilePage() {
                 <tbody>
                   {sensorAlerts.map((alert) => (
                     <tr key={alert.id} className="border-b">
-                      <td className="p-2">{alert.device?.name ?? alert.deviceId}</td>
-                      <td className="p-2">{alert.sensor?.title ?? alert.sensorId}</td>
+                      <td className="p-2">
+                        {alert.device?.name ?? alert.deviceId}
+                      </td>
+                      <td className="p-2">
+                        {alert.sensor?.title ?? alert.sensorId}
+                      </td>
                       <td className="p-2">{alert.operator}</td>
                       <td className="p-2">{alert.threshold}</td>
                       <td className="p-2">{alert.email}</td>
                       <td className="p-2">
-                        <Form method="post" action={`/profile/${profile?.user?.name}`}>
-                          <input type="hidden" name="alertId" value={alert.id} />
-                          <button type="submit" className="cursor-pointer hover:text-red-500 transition-colors">
+                        <Form
+                          method="post"
+                          action={`/profile/${profile?.user?.name}`}
+                        >
+                          <input
+                            type="hidden"
+                            name="alertId"
+                            value={alert.id}
+                          />
+                          <button
+                            type="submit"
+                            className="cursor-pointer hover:text-red-500 transition-colors"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </Form>
                       </td>
-                  </tr>
+                    </tr>
                   ))}
                 </tbody>
               </table>

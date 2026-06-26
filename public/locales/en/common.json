@@ -21,6 +21,7 @@
 		"threshold": "Threshold",
 		"cancel": "Cancel",
 		"save": "Save",
-		"email_subscription": "Email for notifications"
+		"email_subscription": "Email for notifications",
+		"triggeredAlerts": "Exceeded Sensors"
 	}
 }
