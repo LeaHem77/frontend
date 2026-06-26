@@ -29,7 +29,7 @@ export async function action({ request }: Route.ActionArgs) {
     0
   )
 
-  if (totalSensors > 10) {
+  if (totalSensors > 50) {
     return StandardResponse.badRequest(
       'Too many sensors in this area (max 10). Please draw a smaller area.'
     )
