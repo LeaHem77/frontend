@@ -13,6 +13,7 @@ import { Slider } from "~/components/ui/slider"
 import { useToast } from "~/components/ui/use-toast"
 import { getSensorAlertDefaults } from "~/lib/sensor-alert-defaults"
 import { type SensorWithLatestMeasurement } from "~/db/schema"
+import { isValidEmail } from '~/lib/validation'
 
 interface SensorAlertDialogProps {
   sensor: SensorWithLatestMeasurement
@@ -30,6 +31,7 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const [thresholdInput, setThresholdInput] = useState<string>(
     String(defaults?.defaultThreshold ?? 0)
   )
+  const emailValid = email === "" || isValidEmail(email)
 
   useEffect(() => {
     if (open) {
@@ -163,15 +165,24 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
             placeholder="name@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-md px-2 py-1.5 text-sm bg-transparent"
+            className={`w-full border rounded-md px-2 py-1.5 text-sm bg-transparent ${!emailValid ? "border-red-500" : ""
+              }`}
           />
+          {!emailValid && (
+            <p className="text-xs text-red-500">
+              {t("sensorAlert.email_invalid")}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             {t("sensorAlert.cancel")}
           </Button>
-          <Button onClick={handleSave} disabled={threshold === undefined || !email}>
+          <Button
+            onClick={handleSave}
+            disabled={threshold === undefined || !email || !isValidEmail(email)}
+          >
             {t("sensorAlert.save")}
           </Button>
         </DialogFooter>

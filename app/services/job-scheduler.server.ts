@@ -21,7 +21,7 @@ export async function initScheduler() {
 
 	await boss.start()
 
-    await boss.createQueue(CHECK_ALERTS_JOB)
+	await boss.createQueue(CHECK_ALERTS_JOB)
 
 	await boss.schedule(CHECK_ALERTS_JOB, '*/5 * * * *')
 
@@ -29,7 +29,7 @@ export async function initScheduler() {
 		await checkSensorAlerts()
 	})
 
-    // NUR ZUM TESTEN: Job sofort einmal triggern
+	// NUR ZUM TESTEN: Job sofort einmal triggern
 	await boss.send(CHECK_ALERTS_JOB, {})
 
 	console.log('✅ pg-boss scheduler initialized')
@@ -104,18 +104,18 @@ function checkThreshold(
 	}
 }
 
-async function getHourlyAverage(sensorId: string) {
-  return 30;
+// async function getHourlyAverage(sensorId: string) {
+//   return 30;
+// }
+
+
+async function getHourlyAverage(sensorId: string): Promise<number | null> {
+	const [latest] = await drizzleClient
+		.select()
+		.from(measurements1hourView)
+		.where(eq(measurements1hourView.sensorId, sensorId))
+		.orderBy(desc(measurements1hourView.time))
+		.limit(1)
+
+	return latest?.value ?? null
 }
-
-
-//async function getHourlyAverage(sensorId: string): Promise<number | null> {
-//	const [latest] = await drizzleClient
-//		.select()
-//		.from(measurements1hourView)
-//		.where(eq(measurements1hourView.sensorId, sensorId))
-//		.orderBy(desc(measurements1hourView.time))
-//		.limit(1)
-
-//	return latest?.value ?? null
-//}
