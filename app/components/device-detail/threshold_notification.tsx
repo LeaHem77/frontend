@@ -27,11 +27,15 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const [threshold, setThreshold] = useState<number>(defaults?.defaultThreshold ?? 0)
   const [email, setEmail] = useState<string>("")
   const { toast } = useToast()
+  const [thresholdInput, setThresholdInput] = useState<string>(
+    String(defaults?.defaultThreshold ?? 0)
+  )
 
   useEffect(() => {
     if (open) {
-      setOperator(defaults?.defaultOperator ?? "gt")
-      setThreshold(defaults?.defaultThreshold ?? 0)
+      const initial = defaults?.defaultThreshold ?? 0
+      setThreshold(initial)
+      setThresholdInput(String(initial))
     }
   }, [open])
 
@@ -39,40 +43,40 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const max = defaults?.max ?? 100
   const step = (max - min) > 50 ? 1 : 0.1
 
- const handleSave = async () => {
-  console.log({ sensorId: sensor.id, deviceId: sensor.deviceId, operator, threshold, email })
-  try {
-    const response = await fetch("/api/sensor-alerts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sensorId: sensor.id,
-        deviceId: sensor.deviceId,
-        operator,
-        threshold,
-        email,
-      }),
-    })
+  const handleSave = async () => {
+    console.log({ sensorId: sensor.id, deviceId: sensor.deviceId, operator, threshold, email })
+    try {
+      const response = await fetch("/api/sensor-alerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sensorId: sensor.id,
+          deviceId: sensor.deviceId,
+          operator,
+          threshold,
+          email,
+        }),
+      })
 
-    if (!response.ok) throw new Error("Failed to create alert")
-    setOpen(false)
-    toast({
-      title: "yeah",
-      description: (
-        <span>
-          text{" "}
-          <a href="/profile/me" className="underline font-semibold">
-            Profil
-          </a>{" "}
-          text.
-        </span>
-      ),
-    })
+      if (!response.ok) throw new Error("Failed to create alert")
+      setOpen(false)
+      toast({
+        title: "yeah",
+        description: (
+          <span>
+            text{" "}
+            <a href="/profile/me" className="underline font-semibold">
+              Profil
+            </a>{" "}
+            text.
+          </span>
+        ),
+      })
 
-  } catch (err) {
-    console.error(err)
+    } catch (err) {
+      console.error(err)
+    }
   }
-}
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -125,15 +129,27 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
               max={max}
               step={step}
               value={[threshold]}
-              onValueChange={([val]) => setThreshold(val)}
+              onValueChange={([val]) => {
+                setThreshold(val)
+                setThresholdInput(String(val))
+              }}
             />
           </div>
 
           <input
             type="number"
+            step="any"
             placeholder={t("sensorAlert.threshold")}
-            value={threshold}
-            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+            value={thresholdInput}
+            onChange={(e) => {
+              const val = e.target.value
+              setThresholdInput(val) // erlaubt "-" und "-1" etc. während des Tippens
+
+              const parsed = parseFloat(val)
+              if (!Number.isNaN(parsed)) {
+                setThreshold(parsed)
+              }
+            }}
             className="border rounded-md px-2 py-1.5 text-sm bg-transparent w-32"
           />
         </div>
