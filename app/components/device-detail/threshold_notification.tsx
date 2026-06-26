@@ -13,6 +13,7 @@ import { Slider } from "~/components/ui/slider"
 import { useToast } from "~/components/ui/use-toast"
 import { getSensorAlertDefaults } from "~/lib/sensor-alert-defaults"
 import { type SensorWithLatestMeasurement } from "~/db/schema"
+import { isValidEmail } from '~/lib/validation'
 
 interface SensorAlertDialogProps {
   sensor: SensorWithLatestMeasurement
@@ -27,11 +28,16 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const [threshold, setThreshold] = useState<number>(defaults?.defaultThreshold ?? 0)
   const [email, setEmail] = useState<string>("")
   const { toast } = useToast()
+  const [thresholdInput, setThresholdInput] = useState<string>(
+    String(defaults?.defaultThreshold ?? 0)
+  )
+  const emailValid = email === "" || isValidEmail(email)
 
   useEffect(() => {
     if (open) {
-      setOperator(defaults?.defaultOperator ?? "gt")
-      setThreshold(defaults?.defaultThreshold ?? 0)
+      const initial = defaults?.defaultThreshold ?? 0
+      setThreshold(initial)
+      setThresholdInput(String(initial))
     }
   }, [open])
 
@@ -39,40 +45,40 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const max = defaults?.max ?? 100
   const step = (max - min) > 50 ? 1 : 0.1
 
- const handleSave = async () => {
-  console.log({ sensorId: sensor.id, deviceId: sensor.deviceId, operator, threshold, email })
-  try {
-    const response = await fetch("/api/sensor-alerts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        sensorId: sensor.id,
-        deviceId: sensor.deviceId,
-        operator,
-        threshold,
-        email,
-      }),
-    })
+  const handleSave = async () => {
+    console.log({ sensorId: sensor.id, deviceId: sensor.deviceId, operator, threshold, email })
+    try {
+      const response = await fetch("/api/sensor-alerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sensorId: sensor.id,
+          deviceId: sensor.deviceId,
+          operator,
+          threshold,
+          email,
+        }),
+      })
 
-    if (!response.ok) throw new Error("Failed to create alert")
-    setOpen(false)
-    toast({
-      title: "yeah",
-      description: (
-        <span>
-          text{" "}
-          <a href="/profile/me" className="underline font-semibold">
-            Profil
-          </a>{" "}
-          text.
-        </span>
-      ),
-    })
+      if (!response.ok) throw new Error("Failed to create alert")
+      setOpen(false)
+      toast({
+        title: "yeah",
+        description: (
+          <span>
+            text{" "}
+            <a href="/profile/me" className="underline font-semibold">
+              Profil
+            </a>{" "}
+            text.
+          </span>
+        ),
+      })
 
-  } catch (err) {
-    console.error(err)
+    } catch (err) {
+      console.error(err)
+    }
   }
-}
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -125,15 +131,27 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
               max={max}
               step={step}
               value={[threshold]}
-              onValueChange={([val]) => setThreshold(val)}
+              onValueChange={([val]) => {
+                setThreshold(val)
+                setThresholdInput(String(val))
+              }}
             />
           </div>
 
           <input
             type="number"
+            step="any"
             placeholder={t("sensorAlert.threshold")}
-            value={threshold}
-            onChange={(e) => setThreshold(parseFloat(e.target.value))}
+            value={thresholdInput}
+            onChange={(e) => {
+              const val = e.target.value
+              setThresholdInput(val)
+
+              const parsed = parseFloat(val)
+              if (!Number.isNaN(parsed)) {
+                setThreshold(parsed)
+              }
+            }}
             className="border rounded-md px-2 py-1.5 text-sm bg-transparent w-32"
           />
         </div>
@@ -147,15 +165,24 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
             placeholder="name@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-md px-2 py-1.5 text-sm bg-transparent"
+            className={`w-full border rounded-md px-2 py-1.5 text-sm bg-transparent ${!emailValid ? "border-red-500" : ""
+              }`}
           />
+          {!emailValid && (
+            <p className="text-xs text-red-500">
+              {t("sensorAlert.email_invalid")}
+            </p>
+          )}
         </div>
 
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             {t("sensorAlert.cancel")}
           </Button>
-          <Button onClick={handleSave} disabled={threshold === undefined || !email}>
+          <Button
+            onClick={handleSave}
+            disabled={threshold === undefined || !email || !isValidEmail(email)}
+          >
             {t("sensorAlert.save")}
           </Button>
         </DialogFooter>
