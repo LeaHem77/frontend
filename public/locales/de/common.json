@@ -21,7 +21,6 @@
 		"threshold": "Schwellwert",
 		"cancel": "Abbrechen",
 		"save": "Speichern",
-		"email_subscription": "E-Mail für Benachrichtigungen",
-		"triggeredAlerts": "Überschrittene Sensoren"
+		"email_subscription": "E-Mail für Benachrichtigungen"
 	}
 }

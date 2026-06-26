@@ -145,7 +145,7 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
             value={thresholdInput}
             onChange={(e) => {
               const val = e.target.value
-              setThresholdInput(val) // erlaubt "-" und "-1" etc. während des Tippens
+              setThresholdInput(val)
 
               const parsed = parseFloat(val)
               if (!Number.isNaN(parsed)) {
