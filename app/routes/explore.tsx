@@ -43,6 +43,8 @@ import { getMeasurementsCount } from '~/db/models/measurement.server'
 import { getTags } from '~/services/device-service.server'
 import { getPhenomena } from '~/db/models/phenomena.server'
 import { DOWNLOAD_FILTER_KEYS } from '~/components/header/download'
+import DrawControl from '~/components/map/draw-control'
+import AreaAlertDialog from '~/components/map/area-alert-dialog'
 
 const INITIAL_VIEW_STATE = {
 	zoom: 2,
@@ -325,6 +327,9 @@ export default function Explore() {
 	const [hoveredFeatureId, setHoveredFeatureId] = useState<
 		string | number | null
 	>(null)
+
+	const [polygonDevices, setPolygonDevices] = useState<any[]>([])
+	const [showAreaAlertDialog, setShowAreaAlertDialog] = useState(false)
 
 	const deviceNamePopup = useMemo(
 		() =>
@@ -765,6 +770,20 @@ export default function Explore() {
 							device={selectedDevice.properties as Device}
 						/>
 					)}
+					<DrawControl onPolygonComplete={async (polygon) => {
+  						const response = await fetch('/api/devices/in-polygon', {
+    						method: 'POST',
+    						headers: { 'Content-Type': 'application/json' },
+    						body: JSON.stringify({ polygon }),
+  						})
+  						const data = await response.json()
+  						if (!response.ok) {
+    						console.error(data.message)
+    						return
+  						}
+  						setPolygonDevices(data.devices)
+  						setShowAreaAlertDialog(true)
+					}} />
 
 					<div className="pointer-events-none absolute inset-0 z-10">
 						<div className="pointer-events-auto">
@@ -772,6 +791,11 @@ export default function Explore() {
 						</div>
 					</div>
 				</Map>
+				<AreaAlertDialog
+          			open={showAreaAlertDialog}
+        			onOpenChange={setShowAreaAlertDialog}
+          			devices={polygonDevices}
+        		/>
 			</MapProvider>
 		</div>
 	)

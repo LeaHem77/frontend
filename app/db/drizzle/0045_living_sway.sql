@@ -1,0 +1,1 @@
+ALTER TABLE "sensor_alert" ADD COLUMN "seen_at" timestamp;
