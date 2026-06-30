@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useTranslation } from "react-i18next"
+import { useTranslation, Trans } from "react-i18next"
 import { Bell } from "lucide-react"
 import {
   Dialog,
@@ -63,14 +63,14 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
       if (!response.ok) throw new Error("Failed to create alert")
       setOpen(false)
       toast({
-        title: "yeah",
+        title: t("sensorAlert.toast_title"),
         description: (
           <span>
-            text{" "}
+            {t("sensorAlert.toast_description", { sensorTitle: sensor.title, threshold })}{" "}
             <a href="/profile/me" className="underline font-semibold">
-              Profil
+              {t("sensorAlert.toast_link")}
             </a>{" "}
-            text.
+            {t("sensorAlert.toast_link_suffix")}
           </span>
         ),
       })
@@ -101,6 +101,7 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
             {" – "}
             <span style={{ color: "#4eaf47" }}>{sensor.title}</span>
           </DialogTitle>
+
         </DialogHeader>
 
         <div className="space-y-6 py-2">

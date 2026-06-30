@@ -22,6 +22,10 @@
 		"cancel": "Abbrechen",
 		"save": "Speichern",
 		"email_subscription": "E-Mail für Benachrichtigungen",
-		"email_invalid": "Bitte gültige E-Mail-Adresse eingeben"
+		"email_invalid": "Bitte gültige E-Mail-Adresse eingeben",
+		"toast_title": "Abo eingerichtet!",
+		"toast_description": "Du wirst benachrichtigt, wenn {{sensorTitle}} den Wert {{threshold}} erreicht.",
+		"toast_link": "Hier klicken",
+		"toast_link_suffix": "um dein Sensor-Abo anzuschauen."
 	}
 }

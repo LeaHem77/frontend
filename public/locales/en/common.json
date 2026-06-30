@@ -22,6 +22,10 @@
 		"cancel": "Cancel",
 		"save": "Save",
 		"email_subscription": "Email for notifications",
-		"email_invalid": "Please enter a valid email address"
+		"email_invalid": "Please enter a valid email address",
+		"toast_title": "Alert set up!",
+		"toast_description": "You'll be notified when {{sensorTitle}} reaches {{threshold}}.",
+		"toast_link": "Click here",
+		"toast_link_suffix": "to view your sensor subscription."
 	}
 }
