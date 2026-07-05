@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useMap } from 'react-map-gl/maplibre'
 import { TerraDraw, TerraDrawPolygonMode, TerraDrawSelectMode } from 'terra-draw'
 import { TerraDrawMapLibreGLAdapter } from 'terra-draw-maplibre-gl-adapter'
@@ -7,12 +7,24 @@ import { Button } from '~/components/ui/button'
 
 interface DrawControlProps {
   onPolygonComplete: (polygon: GeoJSON.Feature) => void
+  onClearRef?: (clearFn: () => void) => void
 }
 
-export default function DrawControl({ onPolygonComplete }: DrawControlProps) {
+export default function DrawControl({ onPolygonComplete, onClearRef }: DrawControlProps) {
   const { current: map } = useMap()
   const drawRef = useRef<TerraDraw | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
+
+  const clearDrawing = () => {
+  if (!drawRef.current) return
+  drawRef.current.clear()
+  drawRef.current.stop()
+  setIsDrawing(false)
+}
+
+useEffect(() => {
+  if (onClearRef) onClearRef(clearDrawing)
+}, [])
 
   const handleStartDrawing = () => {
     if (!map) return
@@ -62,7 +74,7 @@ export default function DrawControl({ onPolygonComplete }: DrawControlProps) {
   }
 
   return (
-    <div className="absolute bottom-24 right-2.5 z-10 flex flex-col gap-2">
+    <div className="absolute bottom-36 right-2.5 z-10 flex flex-col gap-2">
       {!isDrawing ? (
         <Button
           variant="outline"

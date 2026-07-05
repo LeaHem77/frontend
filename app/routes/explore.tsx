@@ -45,6 +45,7 @@ import { getPhenomena } from '~/db/models/phenomena.server'
 import { DOWNLOAD_FILTER_KEYS } from '~/components/header/download'
 import DrawControl from '~/components/map/draw-control'
 import AreaAlertDialog from '~/components/map/area-alert-dialog'
+import { useToast } from '~/components/ui/use-toast'
 
 const INITIAL_VIEW_STATE = {
 	zoom: 2,
@@ -330,6 +331,8 @@ export default function Explore() {
 
 	const [polygonDevices, setPolygonDevices] = useState<any[]>([])
 	const [showAreaAlertDialog, setShowAreaAlertDialog] = useState(false)
+	const clearDrawingRef = useRef<(() => void) | null>(null)
+	const { toast } = useToast()
 
 	const deviceNamePopup = useMemo(
 		() =>
@@ -777,13 +780,18 @@ export default function Explore() {
     						body: JSON.stringify({ polygon }),
   						})
   						const data = await response.json()
-  						if (!response.ok) {
-    						console.error(data.message)
-    						return
+    					if (!response.ok) {
+      						toast({ variant: 'destructive', title: 'Too many sensors (max. 50)' })
+      						return
+    					}
+    					if (data.devices.length === 0) {
+      						toast({ variant: 'destructive', title: 'No sensors found' })
+      						return
   						}
   						setPolygonDevices(data.devices)
   						setShowAreaAlertDialog(true)
-					}} />
+					}}
+					onClearRef={(fn) => { clearDrawingRef.current = fn }} />
 
 					<div className="pointer-events-none absolute inset-0 z-10">
 						<div className="pointer-events-auto">
@@ -793,7 +801,10 @@ export default function Explore() {
 				</Map>
 				<AreaAlertDialog
           			open={showAreaAlertDialog}
-        			onOpenChange={setShowAreaAlertDialog}
+        			onOpenChange={(open) => {
+    					setShowAreaAlertDialog(open)
+    					if (!open) clearDrawingRef.current?.()
+  					}}
           			devices={polygonDevices}
         		/>
 			</MapProvider>
