@@ -28,6 +28,14 @@
 		"toast_description": "You'll be notified when {{sensorTitle}} reaches {{threshold}}.",
 		"toast_link": "Click here",
 		"toast_link_suffix": "to view your sensor subscription.",
-		"triggeredAlerts": "Exceeded Sensors"
+		"triggeredAlerts": "Exceeded Sensors",
+		"areaAlert": {
+  			"title": "Subscribe to area",
+ 			"sensorsFound": "sensors found",
+  			"cancel": "Cancel",
+  			"saveAll": "Save all",
+  			"noSensorsFound": "No sensors found",
+  			"tooManySensors": "Too many sensors (max. 50)"
+}
 	}
 }

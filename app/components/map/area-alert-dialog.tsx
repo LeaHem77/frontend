@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Dialog,
   DialogContent,
@@ -43,6 +44,7 @@ export default function AreaAlertDialog({
 }: AreaAlertDialogProps) {
   const [email, setEmail] = useState('')
   const [sensorConfigs, setSensorConfigs] = useState<Record<string, SensorConfig>>({})
+  const { t } = useTranslation()
 
   useEffect(() => {
     const configs: Record<string, SensorConfig> = {}
@@ -90,10 +92,10 @@ export default function AreaAlertDialog({
       <DialogContent className="sm:max-w-lg dark:bg-zinc-800 dark:text-zinc-200 max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            <span style={{ color: '#0778bc' }}>Area Alerts</span>
+            <span style={{ color: '#0778bc' }}>{t('sensorAlert.areaAlert.title')}</span>
             {' – '}
             <span className="text-sm font-normal text-muted-foreground">
-              {allSensors.length} sensors found
+              {allSensors.length} {t('sensorAlert.areaAlert.sensorsFound')}
             </span>
           </DialogTitle>
         </DialogHeader>
@@ -187,10 +189,10 @@ export default function AreaAlertDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
+            {t('sensorAlert.areaAlert.cancel')}
           </Button>
           <Button onClick={handleSave} disabled={!email}>
-            Save all
+            {t('sensorAlert.areaAlert.saveAll')}
           </Button>
         </DialogFooter>
       </DialogContent>

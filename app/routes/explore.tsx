@@ -43,6 +43,7 @@ import { getMeasurementsCount } from '~/db/models/measurement.server'
 import { getTags } from '~/services/device-service.server'
 import { getPhenomena } from '~/db/models/phenomena.server'
 import { DOWNLOAD_FILTER_KEYS } from '~/components/header/download'
+import { useTranslation } from 'react-i18next'
 import DrawControl from '~/components/map/draw-control'
 import AreaAlertDialog from '~/components/map/area-alert-dialog'
 import { useToast } from '~/components/ui/use-toast'
@@ -333,6 +334,7 @@ export default function Explore() {
 	const [showAreaAlertDialog, setShowAreaAlertDialog] = useState(false)
 	const clearDrawingRef = useRef<(() => void) | null>(null)
 	const { toast } = useToast()
+	const { t } = useTranslation()
 
 	const deviceNamePopup = useMemo(
 		() =>
@@ -781,11 +783,11 @@ export default function Explore() {
   						})
   						const data = await response.json()
     					if (!response.ok) {
-      						toast({ variant: 'destructive', title: 'Too many sensors (max. 50)' })
+      						toast({ variant: 'destructive', title: t('sensorAlert.areaAlert.tooManySensors') })
       						return
     					}
     					if (data.devices.length === 0) {
-      						toast({ variant: 'destructive', title: 'No sensors found' })
+      						toast({ variant: 'destructive', title: t('sensorAlert.areaAlert.noSensorsFound') })
       						return
   						}
   						setPolygonDevices(data.devices)
