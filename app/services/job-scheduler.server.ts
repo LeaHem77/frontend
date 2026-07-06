@@ -29,62 +29,79 @@ export async function initScheduler() {
 		await checkSensorAlerts()
 	})
 
-	// NUR ZUM TESTEN: Job sofort einmal triggern
-	await boss.send(CHECK_ALERTS_JOB, {})
-
-	console.log('✅ pg-boss scheduler initialized')
+	console.log('pg-boss scheduler initialized')
 	return boss
 }
 
+function getUserLanguage(user: { language: string | null }): 'de' | 'en' {
+    return user.language?.startsWith('de') ? 'de' : 'en'
+}
+
 async function checkSensorAlerts() {
-	const alerts = await drizzleClient.query.sensorAlert.findMany({
-		with: {
-			device: true,
-			sensor: true,
-			user: true,
-		},
-	})
+    const alerts = await drizzleClient.query.sensorAlert.findMany({
+        with: { device: true, sensor: true, user: true },
+    })
 
-	const cooldownThreshold = new Date(Date.now() - COOLDOWN_MS)
+    const cooldownThreshold = new Date(Date.now() - COOLDOWN_MS)
 
-	for (const alert of alerts) {
-		// Cooldown check: skip if notified recently
-		if (alert.lastNotifiedAt && alert.lastNotifiedAt > cooldownThreshold) {
-			continue
-		}
+    const byUserAndEmail = new Map<string, typeof alerts>()
+    for (const alert of alerts) {
+        const key = `${alert.userId}::${alert.email}`
+        if (!byUserAndEmail.has(key)) byUserAndEmail.set(key, [])
+        byUserAndEmail.get(key)!.push(alert)
+    }
 
-		const avgValue = await getHourlyAverage(alert.sensorId)
-		if (avgValue === null) continue
+    for (const [key, userAlerts] of byUserAndEmail) {
+        const [_, email] = key.split('::')
 
-		const triggered = checkThreshold(
-			avgValue,
-			alert.operator as 'gt' | 'lt' | 'eq',
-			alert.threshold,
-		)
+        const lastNotified = userAlerts
+            .map((a) => a.lastNotifiedAt)
+            .filter(Boolean)
+            .sort((a, b) => b!.getTime() - a!.getTime())[0]
 
-		if (!triggered) continue
+        if (lastNotified && lastNotified > cooldownThreshold) continue
 
-		await sendMail({
-			recipientAddress: alert.email,
-			recipientName: alert.user.name,
-			subject: 'Sensor Alert',
-			body: SensorAlertEmail({
-				user: { name: alert.user.name, email: alert.user.email },
-				deviceName: alert.device.name,
-				deviceId: alert.device.id,
-				sensorTitle: alert.sensor.title,
-				operator: alert.operator as 'gt' | 'lt' | 'eq',
-				threshold: alert.threshold,
-				currentValue: avgValue,
-				language: 'de',
-			}),
-		})
+        const triggered: { alert: typeof userAlerts[0]; avgValue: number }[] = []
+        for (const alert of userAlerts) {
+            const avgValue = await getHourlyAverage(alert.sensorId)
+            if (avgValue === null) continue
+            if (checkThreshold(avgValue, alert.operator as 'gt' | 'lt' | 'eq', alert.threshold)) {
+                triggered.push({ alert, avgValue })
+            }
+        }
 
-		await drizzleClient
-			.update(sensorAlert)
-			.set({ lastNotifiedAt: new Date() })
-			.where(eq(sensorAlert.id, alert.id))
-	}
+        if (triggered.length === 0) continue
+
+        const user = userAlerts[0].user
+
+        await sendMail({
+            recipientAddress: email,
+            recipientName: user.name,
+            subject: triggered.length === 1
+                ? 'Sensor Alert'
+                : `${triggered.length} Sensor Alerts`,
+            body: SensorAlertEmail({
+                user: { name: user.name, email: user.email },
+                triggeredAlerts: triggered.map(({ alert, avgValue }) => ({
+                    deviceName: alert.device.name,
+                    deviceId: alert.device.id,
+                    sensorTitle: alert.sensor.title,
+                    operator: alert.operator as 'gt' | 'lt' | 'eq',
+                    threshold: alert.threshold,
+                    currentValue: avgValue,
+                })),
+                language: getUserLanguage(user),
+            }),
+        })
+
+        // lastNotifiedAt für alle Alerts dieser Gruppe setzen
+        for (const alert of triggered.map((t) => t.alert)) {
+            await drizzleClient
+                .update(sensorAlert)
+                .set({ lastNotifiedAt: new Date() })
+                .where(eq(sensorAlert.id, alert.id))
+        }
+    }
 }
 
 function checkThreshold(

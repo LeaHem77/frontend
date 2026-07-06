@@ -23,7 +23,6 @@
 		"save": "Save",
 		"email_invalid": "Please enter a valid email address",
 		"email_subscription": "Email for notifications",
-		"email_invalid": "Please enter a valid email address",
 		"toast_title": "Alert set up!",
 		"toast_description": "You'll be notified when {{sensorTitle}} reaches {{threshold}}.",
 		"toast_link": "Click here",
@@ -32,6 +31,7 @@
 		"edit_toast_title": "Changes saved!",
 		"edit_toast_description": "Your alert has been updated successfully.",
 		"triggeredAlerts": "Exceeded Sensors",
+		"subscribedSensors": "Subscribed Sensors",
 		"edit_title": "Edit alert",
 		"areaAlert": {
 			"title": "Subscribe to area",

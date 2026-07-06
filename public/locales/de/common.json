@@ -23,7 +23,6 @@
 		"save": "Speichern",
 		"email_invalid": "Bitte gültige E-Mail-Adresse eingeben",
 		"email_subscription": "E-Mail für Benachrichtigungen",
-		"email_invalid": "Bitte gültige E-Mail-Adresse eingeben",
 		"toast_title": "Abo eingerichtet!",
 		"toast_description": "Du wirst benachrichtigt, wenn {{sensorTitle}} den Wert {{threshold}} erreicht.",
 		"toast_link": "Hier klicken",
@@ -32,6 +31,7 @@
 		"edit_toast_title": "Änderungen gespeichert!",
 		"edit_toast_description": "Dein Alert wurde erfolgreich aktualisiert.",
 		"triggeredAlerts": "Überschrittene Sensoren",
+		"subscribedSensors": "Abonnierte Sensoren",
 		"edit_title": "Alert bearbeiten",
 		"areaAlert": {
 			"title": "Bereich abonnieren",

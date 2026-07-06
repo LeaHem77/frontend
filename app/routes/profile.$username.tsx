@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { redirect, useLoaderData, Form } from "react-router";
 import { Trash2 } from "lucide-react";
-import { ArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router'
+import { ArrowUpRight } from "lucide-react";
+import { Link } from "react-router";
 import { type Route } from "./+types/profile.$username";
 import { getColumns } from "~/components/mydevices/dt/columns";
 import { DataTable } from "~/components/mydevices/dt/data-table";
@@ -22,7 +22,7 @@ import { userNameFromURl } from "~/services/user-service.server";
 import { getSensorAlertsForUser } from "~/services/sensor-alert.server";
 import { deleteSensorAlert } from "~/services/sensor-alert.server";
 import { getTriggeredAlertsForUser } from "~/services/sensor-alert.server";
-import EditAlertDialog from '~/components/edit-alert-dialog';
+import EditAlertDialog from "~/components/edit-alert-dialog";
 
 type ActionData = {
   success: boolean;
@@ -275,7 +275,7 @@ export default function ProfilePage() {
           {isOwner && sensorAlerts.length > 0 && (
             <div className="dark:bg-dark-background rounded-xl bg-white p-6 shadow-lg">
               <div className="text-light-green dark:text-dark-green mb-4 text-3xl font-semibold">
-                {tCommon("sensorAlert.triggeredAlerts")}
+                {tCommon("sensorAlert.subscribedSensors")}
               </div>
               <table className="w-full text-sm">
                 <thead>
@@ -313,8 +313,15 @@ export default function ProfilePage() {
                             alert={alert}
                             onSaved={() => window.location.reload()}
                           />
-                          <Form method="post" action={`/profile/${profile?.user?.name}`}>
-                            <input type="hidden" name="alertId" value={alert.id} />
+                          <Form
+                            method="post"
+                            action={`/profile/${profile?.user?.name}`}
+                          >
+                            <input
+                              type="hidden"
+                              name="alertId"
+                              value={alert.id}
+                            />
                             <button
                               type="submit"
                               className="cursor-pointer hover:text-red-500 transition-colors"
