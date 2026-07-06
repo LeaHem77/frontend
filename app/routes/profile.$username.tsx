@@ -20,6 +20,7 @@ import { userNameFromURl } from "~/services/user-service.server";
 import { getSensorAlertsForUser } from "~/services/sensor-alert.server";
 import { deleteSensorAlert } from "~/services/sensor-alert.server";
 import { getTriggeredAlertsForUser } from "~/services/sensor-alert.server";
+import EditAlertDialog from '~/components/edit-alert-dialog';
 
 type ActionData = {
   success: boolean;
@@ -298,22 +299,21 @@ export default function ProfilePage() {
                       <td className="p-2">{alert.threshold}</td>
                       <td className="p-2">{alert.email}</td>
                       <td className="p-2">
-                        <Form
-                          method="post"
-                          action={`/profile/${profile?.user?.name}`}
-                        >
-                          <input
-                            type="hidden"
-                            name="alertId"
-                            value={alert.id}
+                        <div className="flex items-center gap-2">
+                          <EditAlertDialog
+                            alert={alert}
+                            onSaved={() => window.location.reload()}
                           />
-                          <button
-                            type="submit"
-                            className="cursor-pointer hover:text-red-500 transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </Form>
+                          <Form method="post" action={`/profile/${profile?.user?.name}`}>
+                            <input type="hidden" name="alertId" value={alert.id} />
+                            <button
+                              type="submit"
+                              className="cursor-pointer hover:text-red-500 transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </Form>
+                        </div>
                       </td>
                     </tr>
                   ))}

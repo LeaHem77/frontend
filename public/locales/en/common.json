@@ -29,7 +29,10 @@
 		"toast_link": "Click here",
 		"toast_link_suffix": "to view your sensor subscription.",
 		"toast_description_area": "You'll be notified for the selected sensors in your area.",
+		"edit_toast_title": "Changes saved!",
+		"edit_toast_description": "Your alert has been updated successfully.",
 		"triggeredAlerts": "Exceeded Sensors",
+		"edit_title": "Edit alert",
 		"areaAlert": {
 			"title": "Subscribe to area",
 			"sensorsFound": "sensors found",

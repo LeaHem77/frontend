@@ -29,7 +29,10 @@
 		"toast_link": "Hier klicken",
 		"toast_link_suffix": "um dein Sensor-Abo anzuschauen.",
 		"toast_description_area": "Du wirst für die ausgewählten Sensoren in deiner Area benachrichtigt.",
+		"edit_toast_title": "Änderungen gespeichert!",
+		"edit_toast_description": "Dein Alert wurde erfolgreich aktualisiert.",
 		"triggeredAlerts": "Überschrittene Sensoren",
+		"edit_title": "Alert bearbeiten",
 		"areaAlert": {
 			"title": "Bereich abonnieren",
 			"sensorsFound": "Sensoren gefunden",

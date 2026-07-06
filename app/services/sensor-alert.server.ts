@@ -1,5 +1,5 @@
 import { and, eq } from 'drizzle-orm'
-import { drizzleClient } from '~/db.server' 
+import { drizzleClient } from '~/db.server'
 import { sensorAlert, type InsertSensorAlert } from '~/db/schema'
 
 export async function createSensorAlert(
@@ -57,4 +57,25 @@ export async function markAlertsAsSeen(userId: string) {
         .update(sensorAlert)
         .set({ seenAt: new Date() })
         .where(eq(sensorAlert.userId, userId))
+}
+
+export async function updateSensorAlert(
+    alertId: string,
+    userId: string,
+    data: { operator: string; threshold: number; email: string }
+) {
+    return drizzleClient
+        .update(sensorAlert)
+        .set({
+            operator: data.operator,
+            threshold: data.threshold,
+            email: data.email,
+            updatedAt: new Date(),
+        })
+        .where(
+            and(
+                eq(sensorAlert.id, alertId),
+                eq(sensorAlert.userId, userId)
+            )
+        )
 }

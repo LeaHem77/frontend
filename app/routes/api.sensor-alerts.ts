@@ -6,8 +6,11 @@ import {
     createSensorAlert,
     deleteSensorAlert,
     getSensorAlertsForUser,
+    updateSensorAlert,
+
 } from '~/services/sensor-alert.server'
 import { isValidEmail } from '~/lib/validation'
+
 /**
  * @openapi
  * /api/sensor-alerts:
@@ -74,6 +77,18 @@ export async function action({ request }: Route.ActionArgs) {
         }
         await deleteSensorAlert(alertId, userId)
         return StandardResponse.noContent()
+    }
+
+    if (request.method === 'PATCH') {
+        const { alertId, operator, threshold, email } = await request.json()
+        if (!alertId || !operator || threshold === undefined || !email) {
+            return StandardResponse.badRequest('Missing required fields')
+        }
+        if (!isValidEmail(email)) {
+            return StandardResponse.badRequest('Invalid email address')
+        }
+        await updateSensorAlert(alertId, userId, { operator, threshold, email })
+        return StandardResponse.ok({ success: true })
     }
 
     if (request.method === 'POST') {
