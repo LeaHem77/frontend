@@ -10,6 +10,7 @@ import {
 import { Button } from '../ui/button'
 import { Slider } from '~/components/ui/slider'
 import { getSensorAlertDefaults } from '~/lib/sensor-alert-defaults'
+import { useToast } from '~/components/ui/use-toast'
 
 interface SensorConfig {
   sensorId: string
@@ -45,6 +46,7 @@ export default function AreaAlertDialog({
   const [email, setEmail] = useState('')
   const [sensorConfigs, setSensorConfigs] = useState<Record<string, SensorConfig>>({})
   const { t } = useTranslation()
+  const { toast } = useToast()
 
   useEffect(() => {
     const configs: Record<string, SensorConfig> = {}
@@ -85,6 +87,18 @@ export default function AreaAlertDialog({
       })
     }
     onOpenChange(false)
+    toast({
+      title: t("sensorAlert.toast_title"),
+      description: (
+        <span>
+          {t("sensorAlert.toast_description_area")}{" "}
+          <a href="/profile/me" className="underline font-semibold">
+            {t("sensorAlert.toast_link")}
+          </a>{" "}
+          {t("sensorAlert.toast_link_suffix")}
+        </span>
+      ),
+    })
   }
 
   return (

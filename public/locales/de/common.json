@@ -28,14 +28,15 @@
 		"toast_description": "Du wirst benachrichtigt, wenn {{sensorTitle}} den Wert {{threshold}} erreicht.",
 		"toast_link": "Hier klicken",
 		"toast_link_suffix": "um dein Sensor-Abo anzuschauen.",
+		"toast_description_area": "Du wirst für die ausgewählten Sensoren in deiner Area benachrichtigt.",
 		"triggeredAlerts": "Überschrittene Sensoren",
 		"areaAlert": {
-  			"title": "Bereich abonnieren",
-  			"sensorsFound": "Sensoren gefunden",
-  			"cancel": "Abbrechen",
-  			"saveAll": "Alle speichern",
-  			"noSensorsFound": "Keine Sensoren gefunden",
-  			"tooManySensors": "Zu viele Sensoren (max. 50)"
-}
+			"title": "Bereich abonnieren",
+			"sensorsFound": "Sensoren gefunden",
+			"cancel": "Abbrechen",
+			"saveAll": "Alle speichern",
+			"noSensorsFound": "Keine Sensoren gefunden",
+			"tooManySensors": "Zu viele Sensoren (max. 50)"
+		}
 	}
 }
