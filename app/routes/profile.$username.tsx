@@ -1,6 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { redirect, useLoaderData, Form } from "react-router";
 import { Trash2 } from "lucide-react";
+import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router'
 import { type Route } from "./+types/profile.$username";
 import { getColumns } from "~/components/mydevices/dt/columns";
 import { DataTable } from "~/components/mydevices/dt/data-table";
@@ -300,6 +302,13 @@ export default function ProfilePage() {
                       <td className="p-2">{alert.email}</td>
                       <td className="p-2">
                         <div className="flex items-center gap-2">
+                          <Link
+                            to={`/explore/${alert.deviceId}`}
+                            className="cursor-pointer hover:text-green-500 transition-colors"
+                            title="Go to sensor"
+                          >
+                            <ArrowUpRight className="h-4 w-4" />
+                          </Link>
                           <EditAlertDialog
                             alert={alert}
                             onSaved={() => window.location.reload()}
