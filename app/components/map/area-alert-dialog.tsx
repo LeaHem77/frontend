@@ -11,6 +11,7 @@ import { Button } from '../ui/button'
 import { Slider } from '~/components/ui/slider'
 import { getSensorAlertDefaults } from '~/lib/sensor-alert-defaults'
 import { useToast } from '~/components/ui/use-toast'
+import { useRootRouteLoaderData } from '~/root'
 
 interface SensorConfig {
   sensorId: string
@@ -43,7 +44,9 @@ export default function AreaAlertDialog({
   onOpenChange,
   devices,
 }: AreaAlertDialogProps) {
-  const [email, setEmail] = useState('')
+  //const [email, setEmail] = useState('')
+  const { user } = useRootRouteLoaderData()
+  const [email, setEmail] = useState<string>(user?.email ?? "")
   const [sensorConfigs, setSensorConfigs] = useState<Record<string, SensorConfig>>({})
   const { t } = useTranslation()
   const { toast } = useToast()

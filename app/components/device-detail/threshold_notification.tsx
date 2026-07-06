@@ -14,6 +14,7 @@ import { useToast } from "~/components/ui/use-toast"
 import { getSensorAlertDefaults } from "~/lib/sensor-alert-defaults"
 import { type SensorWithLatestMeasurement } from "~/db/schema"
 import { isValidEmail } from '~/lib/validation'
+import { useRootRouteLoaderData } from '~/root'
 
 interface SensorAlertDialogProps {
   sensor: SensorWithLatestMeasurement
@@ -26,12 +27,15 @@ export default function SensorAlertDialog({ sensor }: SensorAlertDialogProps) {
   const [open, setOpen] = useState(false)
   const [operator, setOperator] = useState<string>(defaults?.defaultOperator ?? "gt")
   const [threshold, setThreshold] = useState<number>(defaults?.defaultThreshold ?? 0)
-  const [email, setEmail] = useState<string>("")
+  //const [email, setEmail] = useState<string>("")
+  const { user } = useRootRouteLoaderData()
+  const [email, setEmail] = useState<string>(user?.email ?? "")
   const { toast } = useToast()
   const [thresholdInput, setThresholdInput] = useState<string>(
     String(defaults?.defaultThreshold ?? 0)
   )
   const emailValid = email === "" || isValidEmail(email)
+
 
   useEffect(() => {
     if (open) {
