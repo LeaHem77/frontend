@@ -20,6 +20,7 @@ interface SensorConfig {
   unit: string | null
   operator: string
   threshold: number
+  thresholdInput: string
   enabled: boolean
 }
 
@@ -63,6 +64,7 @@ export default function AreaAlertDialog({
           unit: sensor.unit,
           operator: defaults?.defaultOperator ?? 'gt',
           threshold: defaults?.defaultThreshold ?? 0,
+          thresholdInput: String(defaults?.defaultThreshold ?? 0),
           enabled: true,
         }
       }
@@ -183,9 +185,28 @@ export default function AreaAlertDialog({
                     onValueChange={([val]) =>
                       setSensorConfigs((prev) => ({
                         ...prev,
-                        [sensor.id]: { ...prev[sensor.id], threshold: val },
+                        [sensor.id]: { ...prev[sensor.id], threshold: val, thresholdInput: String(val), },
                       }))
                     }
+                  />
+                  <input
+                    type="number"
+                    step="any"
+                    value={config.thresholdInput}
+                    disabled={!config.enabled}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      const parsed = parseFloat(val)
+                      setSensorConfigs((prev) => ({
+                        ...prev,
+                        [sensor.id]: {
+                          ...prev[sensor.id],
+                          thresholdInput: val,
+                          threshold: !Number.isNaN(parsed) ? parsed : prev[sensor.id].threshold,
+                        },
+                      }))
+                    }}
+                    className="border rounded-md px-2 py-1.5 text-sm bg-transparent w-32"
                   />
                 </div>
               </div>
